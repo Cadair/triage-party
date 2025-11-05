@@ -1,0 +1,150 @@
+# Copyright 2020 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+settings:
+  name: sunpy
+  member-roles:
+   - collaborator
+   - owner
+   - member
+  min_similarity: 0.75
+  members:
+    - dstansby  # David used to be a maintainer and has lots of issues
+
+sunpy-repos: &sunpy-repos
+  - https://github.com/sunpy/sunpy
+  - https://github.com/sunpy/ndcube
+  - https://github.com/sunpy/drms
+  - https://github.com/sunpy/sunraster
+  - https://github.com/sunpy/sunkit-image
+  - https://github.com/sunpy/sunpy-soar
+  - https://github.com/sunpy/sunkit-instruments
+  - https://github.com/sunpy/sunkit-magex
+  - https://github.com/sunpy/pyflct
+  - https://github.com/sunpy/radiospectra
+  - https://github.com/sunpy/package-template
+  - https://github.com/sunpy/sunpy-sphinx-theme
+  - https://github.com/sunpy/sunpy.org
+  - https://github.com/sunpy/sunkit-pyvista
+  - https://github.com/sunpy/mpl-animators
+  - https://github.com/sunpy/data
+  - https://github.com/sunpy/ablog
+  - https://github.com/sunpy/sunkit-spex
+  - https://github.com/sunpy/.github
+  - https://github.com/sunpy/project
+
+collections:
+  - id: home
+    name: Home
+    repos: *sunpy-repos
+    rules:
+      - issue-needs-comment
+      - needs-review
+      - issue-has-question
+
+  - id: review
+    name: Reviews
+    repos: *sunpy-repos
+    rules:
+      - needs-review-label
+      - needs-review
+
+  - id: release
+    name: Release Milestones
+    display: kanban
+    repos:
+      - https://github.com/sunpy/sunpy
+    overflow: 3
+    selector: milestone
+    dedup: true
+    rules:
+      - milestone-not-started
+      - milestone-assignee-updated
+      - milestone-pr-needs-review
+      - milestone-pr-needs-work
+      - milestone-pr-needs-merge
+      - milestone-recently-closed
+
+rules:
+  ### Milestone Kanban ###
+  milestone-not-started:
+    name: "Not started"
+    filters:
+      - tag: open-milestone
+      - tag: "!assignee-updated"
+      - tag: "!(assignee-open-pr|assignee-closed-pr)"
+
+  milestone-assignee-updated:
+    name: "In Progress"
+    filters:
+      - tag: open-milestone
+      - tag: "assignee-updated"
+      - tag: "!(pr-changes-requested|pr-reviewer-comment|pr-unreviewed|pr-new-commits|pr-approved|pr-changes-requested)"
+
+  milestone-pr-needs-work:
+    name: "PR needs work"
+    filters:
+      - tag: open-milestone
+      - tag: "(pr-changes-requested|pr-reviewer-comment)"
+
+  milestone-pr-needs-review:
+    name: "PR needs Review"
+    filters:
+      - tag: open-milestone
+      - tag: "(pr-unreviewed|pr-new-commits)"
+
+  milestone-pr-needs-merge:
+    name: "PR needs Merge"
+    filters:
+      - tag: open-milestone
+      - tag: "(pr-approved|pr-approved-but-pushed)"
+
+  milestone-recently-closed:
+    name: "Finish Line"
+    filters:
+      - tag: open-milestone
+      - state: closed
+      - updated: -30d
+
+  issue-has-question:
+    name: "Reporter asked a question over a week ago"
+    resolution: "Add an answer"
+    type: issue
+    filters:
+      - tag: recv-q
+      - tag: "!member-last"
+      - tag: "!contributor-last"
+      - responded: +7d
+
+  issue-needs-comment:
+    name: "Unresponded, older than 3 days"
+    type: issue
+    filters:
+      - tag: "!commented"
+      - tag: "recv"
+      - created: +3d
+
+  needs-review-label:
+    name: "Needs Review (labelled)"
+    type: pull_request
+    filters:
+      - label: "Needs Review"
+
+  needs-review:
+    name: "Needs Review (auto)"
+    type: pull_request
+    filters:
+      - title: "!.*(WIP|wip).*"
+      - tag: "!draft"
+      - tag: "(new-commits|unreviewed)"
