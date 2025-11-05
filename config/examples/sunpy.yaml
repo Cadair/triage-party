@@ -18,7 +18,7 @@ settings:
    - collaborator
    - owner
    - member
-  min_similarity: 0.75
+  min_similarity: 0.85
   members:
     - dstansby  # David used to be a maintainer and has lots of issues
 
@@ -45,12 +45,11 @@ sunpy-repos: &sunpy-repos
   - https://github.com/sunpy/project
 
 collections:
-  - id: home
-    name: Home
+  - id: issues
+    name: Issues
     repos: *sunpy-repos
     rules:
       - issue-needs-comment
-      - needs-review
       - issue-has-question
 
   - id: review
@@ -82,14 +81,11 @@ rules:
     name: "Not started"
     filters:
       - tag: open-milestone
-      - tag: "!assignee-updated"
-      - tag: "!(assignee-open-pr|assignee-closed-pr)"
 
   milestone-assignee-updated:
     name: "In Progress"
     filters:
       - tag: open-milestone
-      - tag: "assignee-updated"
       - tag: "!(pr-changes-requested|pr-reviewer-comment|pr-unreviewed|pr-new-commits|pr-approved|pr-changes-requested)"
 
   milestone-pr-needs-work:
