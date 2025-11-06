@@ -51,6 +51,9 @@ collections:
     rules:
       - issue-needs-comment
       - issue-has-question
+      - closed-this-week
+      - necro-bump
+      - high-priority
 
   - id: review
     name: Reviews
@@ -144,3 +147,21 @@ rules:
       - title: "!.*(WIP|wip).*"
       - tag: "!draft"
       - tag: "(new-commits|unreviewed)"
+
+  necro-bump:
+    name: "Commented on While Closed"
+    filters:
+      - comments-while-closed: ">0"
+
+  closed-this-week:
+    name: "Recently closed issues"
+    type: issue
+    filters:
+      - state: closed
+      - closed: -7d
+
+  high-priority:
+    name: "High Priority"
+    type: issue
+    filters:
+      - label: "Priority High"
