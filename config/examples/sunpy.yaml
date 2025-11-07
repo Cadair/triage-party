@@ -21,6 +21,8 @@ settings:
   min_similarity: 0.85
   members:
     - dstansby  # David used to be a maintainer and has lots of issues
+    - STBadman
+    - settwi
 
 sunpy-repos: &sunpy-repos
   - https://github.com/sunpy/sunpy
@@ -39,7 +41,6 @@ sunpy-repos: &sunpy-repos
   - https://github.com/sunpy/sunkit-pyvista
   - https://github.com/sunpy/mpl-animators
   - https://github.com/sunpy/data
-  - https://github.com/sunpy/ablog
   - https://github.com/sunpy/sunkit-spex
   - https://github.com/sunpy/.github
   - https://github.com/sunpy/project
@@ -77,6 +78,18 @@ collections:
       - milestone-pr-needs-work
       - milestone-pr-needs-merge
       - milestone-recently-closed
+
+  - id: issues-ablog
+    name: ABlog
+    repos:
+      - https://github.com/sunpy/ablog
+    rules:
+      - issue-needs-comment
+      - issue-has-question
+      - closed-this-week
+      - necro-bump
+      - high-priority
+      - needs-review
 
 rules:
   ### Milestone Kanban ###
@@ -151,7 +164,8 @@ rules:
   necro-bump:
     name: "Commented on While Closed"
     filters:
-      - comments-while-closed: ">0"
+      - comments-while-closed: ">1"
+      - updated: "-30d"
 
   closed-this-week:
     name: "Recently closed issues"
