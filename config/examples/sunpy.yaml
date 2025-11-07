@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 settings:
-  name: sunpy
+  name: SunPy
   member-roles:
    - collaborator
    - owner
@@ -52,22 +52,24 @@ collections:
     rules:
       - issue-needs-comment
       - issue-has-question
-      - closed-this-week
-      - necro-bump
+      - necro-bump-issue
       - high-priority
+      - closed-this-week
 
   - id: review
-    name: Reviews
+    name: Pull Requests
     repos: *sunpy-repos
     rules:
+      - manual-backports
+      - pr-needs-comment
       - needs-review-label
       - needs-review
+      - necro-bump-pr
 
   - id: release
     name: Release Milestones
     display: kanban
-    repos:
-      - https://github.com/sunpy/sunpy
+    repos: *sunpy-repos
     overflow: 3
     selector: milestone
     dedup: true
@@ -87,7 +89,6 @@ collections:
       - issue-needs-comment
       - issue-has-question
       - closed-this-week
-      - necro-bump
       - high-priority
       - needs-review
 
@@ -139,6 +140,14 @@ rules:
       - tag: "!contributor-last"
       - responded: +7d
 
+  pr-needs-comment:
+    name: "Unresponded, older than 3 days"
+    type: pull_request
+    filters:
+      - tag: "!commented"
+      - tag: "!draft"
+      - created: +3d
+
   issue-needs-comment:
     name: "Unresponded, older than 3 days"
     type: issue
@@ -161,11 +170,21 @@ rules:
       - tag: "!draft"
       - tag: "(new-commits|unreviewed)"
 
-  necro-bump:
-    name: "Commented on While Closed"
+  necro-bump-issue:
+    name: "Commented on While Closed (Last two weeks)"
+    type: issue
     filters:
+      - state: closed
       - comments-while-closed: ">1"
-      - updated: "-30d"
+      - updated: "-14d"
+
+  necro-bump-pr:
+    name: "Commented on While Closed (Last two weeks)"
+    type: pull_request
+    filters:
+      - state: closed
+      - comments-while-closed: ">1"
+      - updated: "-14d"
 
   closed-this-week:
     name: "Recently closed issues"
@@ -179,3 +198,10 @@ rules:
     type: issue
     filters:
       - label: "Priority High"
+
+  manual-backports:
+    name: "Manual Backport Needed"
+    type: pull_request
+    filters:
+      - state: closed
+      - label: "Still Needs Manual Backport"
